@@ -28,5 +28,14 @@ public class SocketClient {
         socket.getInputStream().read(b);
         return new String(b).trim().equals("true");
     }
-
+    
+    public boolean escreverMensagem(String email, String dateTime, String groupId, String conteudo) throws IOException {
+        Socket socket = new Socket("localhost", 10999);
+        String command = "escreverMensagem?email=email&dataTime=hoje&grupoId=idGrupo&conteudo=este é o conteudo";
+        socket.getOutputStream().write(command.getBytes("UTF-8"));
+        byte[] b = new byte[128];
+        socket.getInputStream().read(b);
+        return new String(b).trim().equals("true");
+    }
+    
 }
