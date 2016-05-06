@@ -15,5 +15,5 @@ import java.rmi.RemoteException;
 public interface Usuario extends Remote{
     String getEmail() throws RemoteException;
     String getSenha() throws RemoteException;
-    void notificar(String str) throws RemoteException;
+    boolean notificar(String str) throws RemoteException;
 }

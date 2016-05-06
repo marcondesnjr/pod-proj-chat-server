@@ -6,7 +6,11 @@
 package ifpb.pod.proj.server.socket;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -44,6 +48,39 @@ public class SocketClient {
         Socket socket = new Socket("localhost", 10999);
         String command = "escreverMensagem?email=" + usrEmail + "&grupoId=" + groupId+"&dateTime="+dateTime
                 +"&conteudo="+conteudo;
+        socket.getOutputStream().write(command.getBytes("UTF-8"));
+    }
+    
+    public List<Map<String,String>> listarMensagensPendentes() throws IOException, ClassNotFoundException{
+        Socket socket = new Socket("localhost", 10999);
+        String command = "listarPendentes?";
+        socket.getOutputStream().write(command.getBytes("UTF-8"));
+        byte[] b = new byte[128];
+        List<Map<String,String>> list = (List<Map<String,String>>) new ObjectInputStream(socket.getInputStream()).readObject();
+        return list;
+    }
+    
+    public List<Map<String,String>> listarMensagens() throws IOException, ClassNotFoundException{
+        Socket socket = new Socket("localhost", 10999);
+        String command = "listarMensagens?";
+        socket.getOutputStream().write(command.getBytes("UTF-8"));
+        byte[] b = new byte[128];
+        List<Map<String,String>> list = (List<Map<String,String>>) new ObjectInputStream(socket.getInputStream()).readObject();
+        return list;
+    }
+    
+    public String criarNotificacao(String txt) throws IOException{
+        Socket socket = new Socket("localhost", 10999);
+        String command = "criarNotificacao?text="+txt;
+        socket.getOutputStream().write(command.getBytes("UTF-8"));
+        byte[] b = new byte[128];
+        socket.getInputStream().read(b);
+        return new String(b);
+    }
+    
+    public void estadoNotificado(String id) throws IOException{
+        Socket socket = new Socket("localhost", 10999);
+        String command = "estadoNotificado?id="+id;
         socket.getOutputStream().write(command.getBytes("UTF-8"));
     }
 

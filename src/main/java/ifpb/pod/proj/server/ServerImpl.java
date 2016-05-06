@@ -6,6 +6,7 @@
 package ifpb.pod.proj.server;
 
 import ifpb.pod.proj.entidades.Grupo;
+import ifpb.pod.proj.entidades.Temp;
 import ifpb.pod.proj.interfaces.Server;
 import ifpb.pod.proj.interfaces.Usuario;
 import ifpb.pod.proj.server.socket.SocketClient;
@@ -31,14 +32,15 @@ import java.util.logging.Logger;
 public class ServerImpl extends UnicastRemoteObject implements Server {
 
     private static List<String> tokens;
-    private static List<Grupo> grupos;
+    private static List<Usuario> usuarios;
+    
+    static{
+        tokens = new ArrayList<>();
+        usuarios = new ArrayList<>();
+    }
 
     public ServerImpl() throws RemoteException {
-        tokens = new ArrayList<>();
-        grupos = new ArrayList<>();
-        grupos.add(new Grupo("1", "grupo1"));
-        grupos.add(new Grupo("2", "grupo2"));
-        grupos.add(new Grupo("3", "grupo3"));
+        
     }
 
     @Override
@@ -53,6 +55,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
                 token = token + "&" + usr.getEmail();
                 tokens.add(token);
                 System.out.println(tokens);
+                usuarios.add(usr);
                 return token;
             }
         } catch (IOException ex) {
@@ -76,16 +79,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     @Override
     public void inscreverGrupo(Usuario user, String grupoId) throws RemoteException {
         try {
-            Grupo gp = null;
-            for (Grupo atual : grupos) {
-                if (atual.getId().equals(grupoId)) {
-                    gp = atual;
-                }
-            }
             new SocketClient().entrarGrupo(user.getEmail(), grupoId);
-            if (gp != null) {
-                gp.addUsuario(user);
-            }
         } catch (IOException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -100,6 +94,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         } catch (IOException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public List<Usuario> getUsuarios(){
+        return new ArrayList<>(usuarios);
     }
 
 }
