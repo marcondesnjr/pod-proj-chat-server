@@ -33,7 +33,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     public ServerImpl() throws RemoteException {
         tokens = new ArrayList<>();
         grupos = new ArrayList<>();
-        grupos.add(new Grupo("id", "grupo1"));
+        grupos.add(new Grupo("1", "grupo1"));
+        grupos.add(new Grupo("2", "grupo2"));
+        grupos.add(new Grupo("3", "grupo3"));
     }
 
     @Override
@@ -69,23 +71,27 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void inscreverGrupo(String token, Usuario user, String grupoId) {
-        if (tokens.contains(token)) {
+    public void inscreverGrupo(Usuario user, String grupoId) throws RemoteException {
+        try {
             Grupo gp = null;
             for (Grupo atual : grupos) {
                 if (atual.getId().equals(grupoId)) {
                     gp = atual;
                 }
             }
+            new SocketClient().entrarGrupo(user.getEmail(), grupoId);
             if (gp != null) {
                 gp.addUsuario(user);
             }
+        } catch (IOException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     @Override
     public void escreverMensagem(String grupoId) throws RemoteException {
-        
+
     }
 
 }
