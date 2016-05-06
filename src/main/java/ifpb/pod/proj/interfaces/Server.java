@@ -15,5 +15,5 @@ public interface Server extends Remote {
 
     void inscreverGrupo(Usuario user, String grupoId) throws RemoteException;
 
-    void escreverMensagem(String grupoId) throws RemoteException;
+    void escreverMensagem(String usrEmail, String grupoId, String conteudo) throws RemoteException;
 }

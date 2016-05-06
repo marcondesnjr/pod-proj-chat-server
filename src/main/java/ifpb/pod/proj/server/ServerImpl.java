@@ -16,6 +16,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -90,8 +93,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void escreverMensagem(String grupoId) throws RemoteException {
-
+    public void escreverMensagem(String usrEmail, String grupoId, String conteudo) throws RemoteException {
+        String dataTime = LocalDateTime.now().toString();
+        try {
+            new SocketClient().escreverMensagem(usrEmail, dataTime, grupoId, conteudo);
+        } catch (IOException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

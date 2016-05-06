@@ -39,5 +39,12 @@ public class SocketClient {
         String command = "entrarGrupo?email=" + usrEmail + "&grupoId=" + groupId;
         socket.getOutputStream().write(command.getBytes("UTF-8"));
     }
+    
+    public void escreverMensagem(String usrEmail, String dateTime, String groupId, String conteudo) throws IOException {
+        Socket socket = new Socket("localhost", 10999);
+        String command = "escreverMensagem?email=" + usrEmail + "&grupoId=" + groupId+"&dateTime="+dateTime
+                +"&conteudo="+conteudo;
+        socket.getOutputStream().write(command.getBytes("UTF-8"));
+    }
 
 }
