@@ -91,7 +91,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         String dataTime = LocalDateTime.now().toString();
         try {
             new SocketClient().escreverMensagem(usrEmail, dataTime, grupoId, conteudo);
-        } catch (IOException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

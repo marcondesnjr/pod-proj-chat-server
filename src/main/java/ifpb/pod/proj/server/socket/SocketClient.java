@@ -44,11 +44,12 @@ public class SocketClient {
         socket.getOutputStream().write(command.getBytes("UTF-8"));
     }
     
-    public void escreverMensagem(String usrEmail, String dateTime, String groupId, String conteudo) throws IOException {
+    public void escreverMensagem(String usrEmail, String dateTime, String groupId, String conteudo) throws IOException, ClassNotFoundException {
         Socket socket = new Socket("localhost", 10999);
         String command = "escreverMensagem?email=" + usrEmail + "&grupoId=" + groupId+"&dateTime="+dateTime
                 +"&conteudo="+conteudo;
         socket.getOutputStream().write(command.getBytes("UTF-8"));
+        System.out.println((Boolean) new ObjectInputStream(socket.getInputStream()).readObject());
     }
     
     public List<Map<String,String>> listarMensagensPendentes() throws IOException, ClassNotFoundException{
