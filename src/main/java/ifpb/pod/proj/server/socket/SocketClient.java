@@ -5,6 +5,7 @@
  */
 package ifpb.pod.proj.server.socket;
 
+import ifpb.pod.proj.interfaces.Usuario;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -82,6 +83,12 @@ public class SocketClient {
     public void estadoNotificado(String id) throws IOException{
         Socket socket = new Socket("localhost", 10999);
         String command = "estadoNotificado?id="+id;
+        socket.getOutputStream().write(command.getBytes("UTF-8"));
+    }
+    
+    public void excluirUsuario(Usuario usr) throws IOException{
+        Socket socket = new Socket("localhost", 10999);
+        String command = "excuirUsuario?email="+usr.getEmail();
         socket.getOutputStream().write(command.getBytes("UTF-8"));
     }
 
