@@ -10,6 +10,8 @@ import ifpb.pod.proj.entidades.Temp;
 import ifpb.pod.proj.interfaces.Server;
 import ifpb.pod.proj.interfaces.Usuario;
 import ifpb.pod.proj.server.socket.SocketClient;
+import ifpb.pod.proj.sessiontoken.SessionToken;
+
 import java.io.IOException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -48,11 +50,11 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         try {
             boolean valid = new SocketClient().hasUsuario(usr.getEmail(), usr.getSenha());
             if (valid) {
-                SecureRandom random = new SecureRandom();
-                byte bytes[] = new byte[20];
-                random.nextBytes(bytes);
-                String token = new String(bytes);
-                token = token + "&" + usr.getEmail();
+                String token = SessionToken.generateToken(usr.getEmail());
+
+                    //no lugar disso, deve adicionar o EMAIL DO USUARIO no objeto embutido no token.
+                    //token = token + "&" + usr.getEmail();
+
                 tokens.add(token);
                 System.out.println(tokens);
                 usuarios.add(usr);
