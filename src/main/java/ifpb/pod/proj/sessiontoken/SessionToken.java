@@ -27,13 +27,10 @@ public class SessionToken {
 
 
             JwtBuilder builder = Jwts.builder()
-                    .setSubject("teste") //TEMPORARIO
+                    .setSubject(userEmail) //email para identificar o usuario
                     .signWith(SignatureAlgorithm.HS256, key);
 
-            //AINDA FALTA COLOCAR DADOS DO USUARIO NESSE TOKEN
-
-
-            String token = builder.compact();
+             String token = builder.compact();
             return token;
         }
         catch(UnsupportedEncodingException e){
