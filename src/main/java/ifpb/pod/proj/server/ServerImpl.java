@@ -12,6 +12,7 @@ import ifpb.pod.proj.interfaces.Usuario;
 import ifpb.pod.proj.server.socket.SocketClient;
 import ifpb.pod.proj.sessiontoken.SessionToken;
 
+import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -42,7 +43,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     public ServerImpl() throws RemoteException {
-        
+        super();
     }
 
     @Override
@@ -79,7 +80,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void inscreverGrupo(Usuario user, String grupoId) throws RemoteException {
+    public void inscreverGrupo(Usuario user, String grupoId, String sessionToken) throws RemoteException, AuthenticationException {
+        if ( SessionToken.getEmailFromToken(sessionToken) == null )
+            throw new AuthenticationException("Usuário não está logado");
         try {
             new SocketClient().entrarGrupo(user.getEmail(), grupoId);
         } catch (IOException ex) {
@@ -89,7 +92,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void escreverMensagem(String usrEmail, String grupoId, String conteudo) throws RemoteException {
+    public void escreverMensagem(String usrEmail, String grupoId, String conteudo, String sessionToken) throws RemoteException, AuthenticationException {
+        if ( SessionToken.getEmailFromToken(sessionToken) == null )
+            throw new AuthenticationException("Usuário não está logado");
         String dataTime = LocalDateTime.now().toString();
         try {
             new SocketClient().escreverMensagem(usrEmail, dataTime, grupoId, conteudo);
