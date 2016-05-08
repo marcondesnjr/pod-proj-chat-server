@@ -82,22 +82,21 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         }
     }
 
-
     public List<Usuario> getUsuarios() {
         return new ArrayList<>(usuarios);
     }
 
     @Override
-    public void excluirUsuario(Usuario usr, String token) throws RemoteException {
-        if (isTokenValid(token)) {
-            try {
-                new SocketClient().excluirUsuario(usr);
-            } catch (IOException ex) {
-                Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            throw new RemoteException("Token Invalido");
+    public void excluirUsuario(Usuario usr, String sessionToken) throws RemoteException, AuthenticationException {
+        if (SessionToken.getEmailFromToken(sessionToken) == null) {
+            throw new AuthenticationException("Usuário não está logado");
         }
+        try {
+            new SocketClient().excluirUsuario(usr);
+        } catch (IOException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     @Override
@@ -117,10 +116,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private boolean isTokenValid(String token) {
-        return tokens.contains(token);
     }
 
 }

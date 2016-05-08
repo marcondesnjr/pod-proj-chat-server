@@ -18,7 +18,7 @@ public interface Server extends Remote {
 
     void escreverMensagem(String usrEmail, String grupoId, String conteudo, String sessionToken) throws RemoteException, AuthenticationException;
 
-    void excluirUsuario(Usuario usr, String token) throws RemoteException;
+    void excluirUsuario(Usuario usr, String token) throws RemoteException, AuthenticationException;
 
     void logoff(Usuario usr, String token) throws RemoteException;
 }
