@@ -8,6 +8,9 @@ package ifpb.pod.proj.server;
 import ifpb.pod.proj.interfaces.Server;
 import ifpb.pod.proj.interfaces.Usuario;
 import ifpb.pod.proj.server.socket.SocketClient;
+import ifpb.pod.proj.sessiontoken.SessionToken;
+
+import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -42,11 +45,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         try {
             boolean valid = new SocketClient().hasUsuario(usr.getEmail(), usr.getSenha());
             if (valid) {
-                SecureRandom random = new SecureRandom();
-                byte bytes[] = new byte[20];
-                random.nextBytes(bytes);
-                String token = new String(bytes);
-                token = makeToken();
+
+                String token = SessionToken.generateToken(usr.getEmail());
+                //no lugar disso, deve adicionar o EMAIL DO USUARIO no objeto embutido no token.
                 tokens.add(token);
                 usuarios.add(usr);
                 return token;
@@ -70,31 +71,17 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void inscreverGrupo(Usuario user, String grupoId, String token) throws RemoteException {
-        if (isTokenValid(token)) {
-            try {
-                new SocketClient().entrarGrupo(user.getEmail(), grupoId);
-            } catch (IOException ex) {
-                Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            throw new RemoteException("Token Invalido");
+    public void inscreverGrupo(Usuario user, String grupoId, String sessionToken) throws RemoteException, AuthenticationException {
+        if (SessionToken.getEmailFromToken(sessionToken) == null) {
+            throw new AuthenticationException("Usuário não está logado");
+        }
+        try {
+            new SocketClient().entrarGrupo(user.getEmail(), grupoId);
+        } catch (IOException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    @Override
-    public void escreverMensagem(String usrEmail, String grupoId, String conteudo, String token) throws RemoteException {
-        if (isTokenValid(token)) {
-            String dataTime = LocalDateTime.now().toString();
-            try {
-                new SocketClient().escreverMensagem(usrEmail, dataTime, grupoId, conteudo);
-            } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            throw new RemoteException("Token Invalido");
-        }
-    }
 
     public List<Usuario> getUsuarios() {
         return new ArrayList<>(usuarios);
@@ -119,14 +106,17 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         usuarios.remove(usr);
     }
 
-    private String makeToken() {
-        byte[] b = new byte[128];
+    @Override
+    public void escreverMensagem(String usrEmail, String grupoId, String conteudo, String sessionToken) throws RemoteException, AuthenticationException {
+        if (SessionToken.getEmailFromToken(sessionToken) == null) {
+            throw new AuthenticationException("Usuário não está logado");
+        }
+        String dataTime = LocalDateTime.now().toString();
         try {
-            SecureRandom.getInstanceStrong().nextBytes(b);
-        } catch (NoSuchAlgorithmException ex) {
+            new SocketClient().escreverMensagem(usrEmail, dataTime, grupoId, conteudo);
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return new String(b);
     }
 
     private boolean isTokenValid(String token) {
