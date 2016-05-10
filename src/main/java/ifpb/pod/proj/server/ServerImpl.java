@@ -44,14 +44,18 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     public String login(Usuario usr) throws RemoteException {
         try {
             boolean valid = new SocketClient().hasUsuario(usr.getEmail(), usr.getSenha());
-            if (valid) {
 
+            if (valid) {
+                System.out.println("email: " + usr.getEmail());
                 String token = SessionToken.generateToken(usr.getEmail());
+                System.out.println("token gerado: " + token);
                 //no lugar disso, deve adicionar o EMAIL DO USUARIO no objeto embutido no token.
                 tokens.add(token);
                 usuarios.add(usr);
                 return token;
             }
+
+            System.out.println("usuario ou senha errado");
         } catch (IOException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -103,11 +107,20 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     @Override
     public void logoff(Usuario usr, String token) throws RemoteException {
         tokens.remove(token);
-        usuarios.remove(usr);
+        boolean resp = usuarios.remove(usr);
+        if(resp == true)
+            System.out.println("DESLOGOU USUARIO: " + usr.getEmail());
+        else
+            System.out.println("NAO REMOVEU USUARIO");
+
+        System.out.println("restantes");
+        System.out.println(usuarios);
+        System.out.println(tokens);
     }
 
     @Override
     public void escreverMensagem(String usrEmail, String grupoId, String conteudo, String sessionToken) throws RemoteException, AuthenticationException {
+        System.out.println("escreverMensagem ysertoken: " + sessionToken);
         if (SessionToken.getEmailFromToken(sessionToken) == null) {
             throw new AuthenticationException("Usuário não está logado");
         }

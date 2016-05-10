@@ -28,9 +28,11 @@ public class SocketClient {
     public boolean hasUsuario(String email, String senha) throws IOException {
         Socket socket = new Socket("localhost", 10999);
         String command = "hasUsuario?email=" + email + "&senha=" + senha;
+        System.out.println(command);
         socket.getOutputStream().write(command.getBytes("UTF-8"));
         byte[] b = new byte[128];
         socket.getInputStream().read(b);
+        System.out.println("resposta ao login: " + new String(b).trim() );
         return new String(b).trim().equals("true");
     }
 
@@ -49,6 +51,10 @@ public class SocketClient {
         Socket socket = new Socket("localhost", 10999);
         String command = "escreverMensagem?email=" + usrEmail + "&grupoId=" + groupId+"&dateTime="+dateTime
                 +"&conteudo="+conteudo;
+
+        System.out.println("SOCKETCLIENT.ESCREVERMENSAGEM ->");
+        System.out.println(command);
+
         socket.getOutputStream().write(command.getBytes("UTF-8"));
         System.out.println((Boolean) new ObjectInputStream(socket.getInputStream()).readObject());
     }
