@@ -35,7 +35,7 @@ public class Notificador extends Thread {
                         if (mensagens.size() > 0) {
                             String token = criarNotificação(mensagens);
                             boolean resp = usuario.notificar(token);
-                            if (resp = true) {
+                            if (resp == true) {
                                 SocketClient socketClient = new SocketClient();
                                 for (Map<String, String> mensagen : mensagens) {
                                     socketClient.estadoNotificado(mensagen.get("id"));

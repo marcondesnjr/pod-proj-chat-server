@@ -87,7 +87,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     public List<Usuario> getUsuarios() {
-        return new ArrayList<>(usuarios);
+        return usuarios;
     }
 
     @Override
